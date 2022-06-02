@@ -7,42 +7,42 @@ XSHIFT = [0, 0, 1, -1]
 YSHIFT = [1, -1, 0, 0]
 
 
-def bfs(image: Image, visitMap, x, y) -> tuple:
-    subImagePixel = list()
-    visitList = [(x, y)]
-    minPositoinX, minPositoinY = image.size[0], image.size[1]
-    maxPositoinX, maxPositoinY = 0, 0
-    while len(visitList) > 0:
-        visitPixel = visitList[0]
-        del visitList[0]
-        if visitMap[visitPixel[0]][visitPixel[1]] == 1:
+def findSubImagePixel(image: Image, visitMap, x, y) -> tuple:
+    subImagePixels = list()
+    needVisitPos = [(x, y)]
+    minPosX, minPosY = image.size[0], image.size[1]
+    maxPosX, maxPosY = 0, 0
+    while len(needVisitPos) > 0:
+        visitPos = needVisitPos[0]
+        del needVisitPos[0]
+        if visitMap[visitPos[0]][visitPos[1]] == 1:
             continue
-        visitMap[visitPixel[0]][visitPixel[1]] = 1
-        subImagePixel.append(
-             ((visitPixel[0], visitPixel[1]),
-              image.getpixel((visitPixel[0], visitPixel[1])))
+        visitMap[visitPos[0]][visitPos[1]] = 1
+        subImagePixels.append(
+             ((visitPos[0], visitPos[1]),
+              image.getpixel((visitPos[0], visitPos[1])))
             )
-        minPositoinX = min(minPositoinX, visitPixel[0])
-        minPositoinY = min(minPositoinY, visitPixel[1])
-        maxPositoinX = max(maxPositoinX, visitPixel[0])
-        maxPositoinY = max(maxPositoinY, visitPixel[1])
+        minPosX = min(minPosX, visitPos[0])
+        minPosY = min(minPosY, visitPos[1])
+        maxPosX = max(maxPosX, visitPos[0])
+        maxPosY = max(maxPosY, visitPos[1])
         for i in range(4):
-            positionX = visitPixel[0] + XSHIFT[i]
-            positionY = visitPixel[1] + YSHIFT[i]
+            adjoinPosX = visitPos[0] + XSHIFT[i]
+            adjoinPosY = visitPos[1] + YSHIFT[i]
             if (
-                positionX >= 0 and positionX < image.size[0]
-                and positionY >= 0 and positionY < image.size[1]
-                and visitMap[positionX][positionY] == 0
-                and image.getpixel((positionX, positionY))[3] != 0
+                adjoinPosX >= 0 and adjoinPosX < image.size[0]
+                and adjoinPosY >= 0 and adjoinPosY < image.size[1]
+                and visitMap[adjoinPosX][adjoinPosY] == 0
+                and image.getpixel((adjoinPosX, adjoinPosY))[3] != 0
             ):
-                visitList.append((positionX, positionY))
-    return (subImagePixel,
-            (minPositoinX, minPositoinY),
-            (maxPositoinX - minPositoinX + 1, maxPositoinY - minPositoinY + 1)
+                needVisitPos.append((adjoinPosX, adjoinPosY))
+    return (subImagePixels,
+            (minPosX, minPosY),
+            (maxPosX - minPosX + 1, maxPosY - minPosY + 1)
             )
 
 
-def createNewPng(subImagePixel, base, size):
+def createSubImage(subImagePixel, base, size):
     global subImageCount
     try:
         subImage = Image.new(mode="RGBA", size=size, color=(0, 0, 0, 0))
@@ -70,7 +70,7 @@ def pngSplit():
             if visitMap[i][j] == 1:
                 continue
             if image.getpixel((i, j))[3] != 0:
-                createNewPng(*bfs(image, visitMap, i, j))
+                createSubImage(*findSubImagePixel(image, visitMap, i, j))
     image.close()
 
 
