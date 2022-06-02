@@ -1,5 +1,5 @@
 # pngSplit.py
- pngSplit.py是一个基于PIL的png图像切割工具，pngSplit.py通过bfs在原图中寻找连续的透明度不为0的像素，将搜索到的连续像素保存到新的文件中。
+ pngSplit.py是一个基于PIL的png图像切割工具，pngSplit.py通过bfs在原图中搜索连续的透明度不为0的像素，将搜索到的连续像素保存到新的文件中。
 
 # 效果
  ![](zhenbucuo.png)
